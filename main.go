@@ -54,6 +54,7 @@ func main() {
 	}))
 	mux.Handle("GET /", LoggingHandler(index))
 	mux.Handle("GET /review", LoggingHandler(review))
+	mux.Handle("GET /review/search", LoggingHandler(reviewSearch))
 	mux.Handle("GET /modal/{type}", LoggingHandler(modal))
 	mux.Handle("POST /transaction/{type}", LoggingHandler(transaction))
 

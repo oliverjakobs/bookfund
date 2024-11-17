@@ -43,11 +43,10 @@ func QueryTransactions(query string, args ...any) ([]Transaction, error) {
 
 func CreateTransaction(t Transaction) error {
 	stmt, err := db.Prepare("INSERT INTO transactions (type,amount,reason,timestamp) values (?,?,?,?)")
-	if err != nil {
-		return err
-	}
 
-	_, err = stmt.Exec(t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
+	if err == nil {
+		_, err = stmt.Exec(t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
+	}
 
 	return err
 }
@@ -58,6 +57,10 @@ func GetTransactions(after time.Time) ([]Transaction, error) {
 
 func GetTransactionsAll() ([]Transaction, error) {
 	return QueryTransactions("SELECT * FROM transactions ORDER BY timestamp DESC")
+}
+
+func GetTransactionsByReason(reason string) ([]Transaction, error) {
+	return QueryTransactions("SELECT * FROM transactions WHERE reason LIKE ?  ORDER BY timestamp DESC", "%"+reason+"%")
 }
 
 func GetBalance() (float32, error) {

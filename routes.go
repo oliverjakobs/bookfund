@@ -52,21 +52,6 @@ func index(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func review(w http.ResponseWriter, r *http.Request) {
-	transactions, err := GetTransactionsAll()
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	renderTemplate(w, "./templates/review.html", struct {
-		Transactions []Transaction
-	}{
-		Transactions: transactions,
-	})
-}
-
 func modal(w http.ResponseWriter, r *http.Request) {
 	modalType := r.PathValue("type")
 
@@ -109,4 +94,37 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("HX-Redirect", "/")
 	w.WriteHeader(http.StatusCreated)
+}
+
+func review(w http.ResponseWriter, r *http.Request) {
+	transactions, err := GetTransactionsAll()
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl := template.Must(baseTmpl.Clone())
+	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/review_table.html", "./templates/review_entries.html"))
+
+	handleTemplateError(w, tmpl.ExecuteTemplate(w, "base", struct {
+		Entries []Transaction
+	}{
+		Entries: transactions,
+	}))
+}
+
+func reviewSearch(w http.ResponseWriter, r *http.Request) {
+	search := r.URL.Query().Get("search")
+	transactions, err := GetTransactionsByReason(search)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl := template.Must(baseTmpl.Clone())
+	template.Must(tmpl.ParseFiles("./templates/review_entries.html"))
+
+	handleTemplateError(w, tmpl.ExecuteTemplate(w, "entries", transactions))
 }

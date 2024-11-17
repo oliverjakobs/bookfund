@@ -300,6 +300,21 @@ li .amount {
 
 
 /* --------------------------| table |----------------------------- */
+.table-control {
+  display: flex;
+  width: 100%;
+  margin-bottom: 0.8rem;
+}
+
+.table-control > :last-child:not(:only-child) {
+  margin-left: auto;
+}
+
+.table-control .search {
+  padding: 0.3rem 0;
+  width: 20%;
+}
+
 .table {
   width: 100%;
   margin-bottom: 1rem;

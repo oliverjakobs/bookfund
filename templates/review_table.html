@@ -1,0 +1,16 @@
+
+{{define "content"}}
+<div class="container">
+    <div class="table-control">
+        <input
+        class="search"
+        type="search"
+        placeholder="Search..."
+        name="search"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-get="/review/search"
+        hx-target="[hx-table-content]">
+    </div>
+    {{template "entries" .Entries}}
+</div>
+{{end}}
