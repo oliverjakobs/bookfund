@@ -1,0 +1,24 @@
+{{define "content"}}
+<div class="container">
+    <div class="control">
+        <h1>Balance:</h1>
+        <div class="balance">
+            {{ formatCurrency .Balance }}
+        </div>
+        <div>
+            <button class="button deposit" hx-get="/modal/deposit" hx-target="body" hx-swap="beforeend">+</button>
+            <button class="button withdrawal" hx-get="/modal/withdrawal" hx-target="body" hx-swap="beforeend">-</button>
+            
+        </div>
+    </div>
+    <ul>
+        {{range .Transactions}}
+            <li class="{{.Type}}">
+                <div class="amount">{{ formatCurrency .Amount }}</div>
+                <div>{{.Reason}}</div>
+                <div>{{.Timestamp.Format "02.01.2006"}}</div>
+            </li>
+        {{end}}
+    </ul>
+</div>
+{{end}}

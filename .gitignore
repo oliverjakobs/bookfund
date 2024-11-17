@@ -1,0 +1,6 @@
+#Directories
+.vs/
+tmp/
+
+#files
+.env

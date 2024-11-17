@@ -1,0 +1,334 @@
+:root {
+  --main-color: #212529;
+  --main-bg-color: #ffffff;
+  --border-color: #b6b6b6;
+  --border-hover: #6b6b6b;
+  --hover-color: rgba(0, 0, 0, 0.05);
+
+  --red: #faafa8;
+  --green: #b4ddd3;
+
+  --container-width: 40%;
+}
+
+body {
+  font-family:  sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--main-color);
+  background-color: var(--main-bg-color);
+  display:flex;
+  flex-direction:column;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: var(--container-width);
+  margin-right: auto;
+  margin-left: auto;
+  font-size: 3rem;
+  font-weight: 500;
+  padding: 0.6rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 3rem;
+}
+
+header .spacer, header .user {
+  width: 2.4rem;
+  margin: 0 0.4rem;
+}
+
+header .user {
+  font-size: 1.6rem;
+  text-align: center;
+  transition: all .6s ease;
+}
+
+header .user:hover {
+  color: #b4b4b4;
+}
+
+.content {
+  flex: 1;
+}
+
+footer {
+  text-align: center;
+  padding: 1.2rem;
+  border-top: 2px solid var(--border-color);
+  margin-top: 3rem;
+  margin-bottom: 1.8rem;
+}
+
+a {
+  text-decoration: none;
+  color: var(--main-color);
+}
+
+.logo::before, .logo::after {
+  display: inline-block;
+  transition: transform .5s ease;
+  content: '~';
+}
+
+.logo:hover {
+  transition: transform .5s ease;
+}
+
+.logo:hover::before {
+  transform: translateX(-.2em);
+}
+
+.logo:hover::after {
+  transform: translateX(.2em);
+}
+
+.copyright::before {
+  font-family: Arial, sans-serif;
+  margin-right: 0.2em;
+  content: "\00a9";
+}
+
+button, a.button, form input[type=submit] {
+  padding: 0.3rem 1.4rem;
+  width: auto;
+  height: auto;
+  font-size: 0.875rem;
+  font-weight: 300;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--main-bg-color);
+  cursor: pointer;
+  transition: all .6s ease;
+}
+
+button:hover, a.button:hover, form input[type=submit]:hover {
+  border-color: var(--border-hover);
+  background-color: var(--hover-color);
+}
+
+.container {
+  width: var(--container-width);
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.control {
+  width: fit-content;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 2rem;
+}
+
+.control>h1 {
+  margin: 0;
+  font-weight: normal;
+}
+
+.control .button {
+  margin: 0 0.2rem;
+}
+
+.balance {
+  padding: 0.8rem 0;
+  font-size: 2rem;
+  color: #b4b4b4;
+}
+
+/* --------------------------| entries |--------------------------- */
+ul {
+  list-style: none;
+  display: grid;
+  row-gap: 0.6rem;
+  padding: 0.8rem 2rem;
+}
+
+ul li {
+  display: grid;
+  grid-template-columns: 2.8rem 1fr 3fr 1fr;
+  column-gap: 0.8rem;
+  border-radius: 4px;
+  padding-left: 0.4rem;
+  padding-right: 0.8rem;
+}
+
+ul li>* {
+  align-self: center;
+}
+
+ul li::before {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: bolder;
+  width: 2.8rem;
+}
+
+li.deposit {
+  background-color: var(--green);
+}
+
+li.deposit::before {
+  content: "+";
+}
+
+li.withdrawal {
+  background-color: var(--red);
+}
+
+li.withdrawal::before {
+  content: "-";
+}
+
+li .amount {
+  font-weight: bold;
+  padding-right: 1rem;
+  justify-self: end;
+}
+
+li .amount {
+  justify-self: end;
+}
+
+/* --------------------------| form |------------------------------ */
+.transaction-form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* --------------------------| modal |----------------------------- */
+#modal {
+	/* Underlay covers entire screen. */
+	position: fixed;
+	top:0px;
+	bottom: 0px;
+	left:0px;
+	right:0px;
+	background-color:rgba(0,0,0,0.5);
+	z-index:1000;
+
+	/* Flexbox centers the .modal-content vertically and horizontally */
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+
+	/* Animate when opening */
+	animation-name: fadeIn;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal > .modal-underlay {
+	/* underlay takes up the entire viewport. This is only
+	required if you want to click to dismiss the popup */
+	position: absolute;
+	z-index: -1;
+	top:0px;
+	bottom:0px;
+	left: 0px;
+	right: 0px;
+}
+
+#modal > .modal-content {
+	/* Position visible dialog near the top of the window */
+	margin-top:10vh;
+
+	/* Sizing for visible dialog */
+	width:80%;
+	max-width:600px;
+
+	/* Display properties for visible dialog*/
+	border:solid 1px #999;
+	border-radius:8px;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
+	background-color:white;
+	padding:20px;
+
+	/* Animate when opening */
+	animation-name:zoomIn;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal.closing {
+	/* Animate when closing */
+	animation-name: fadeOut;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal.closing > .modal-content {
+	/* Animate when closing */
+	animation-name: zoomOut;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+@keyframes fadeIn {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
+
+@keyframes fadeOut {
+	0% {opacity: 1;}
+	100% {opacity: 0;}
+}
+
+@keyframes zoomIn {
+	0% {transform: scale(0.9);}
+	100% {transform: scale(1);}
+}
+
+@keyframes zoomOut {
+	0% {transform: scale(1);}
+	100% {transform: scale(0.9);}
+}
+
+
+/* --------------------------| table |----------------------------- */
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+
+.table :is(th, td) {
+  padding: 0.5rem 0.5rem;
+  border: thin solid var(--border-color);
+}
+
+.table th {
+  text-align: left;
+  border-color: var(--border-color);
+  background-color: var(--border-color);
+}
+
+.table tr:hover {
+  background-color: var(--hover-color);
+}
+
+.table td.right {
+  text-align: right;
+}
+
+.table td.center {
+  text-align: center;
+}
+
+.table td .delete {
+  color: crimson;
+}

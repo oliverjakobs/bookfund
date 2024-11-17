@@ -1,0 +1,31 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Bookfund</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+    
+    <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+    
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+  </head>
+  <body>
+    <header>
+      <div class="spacer"></div>
+      <a class="logo" href="/">bookfund</a>
+      <a class="user" href="/review"><span class="lnr lnr-user"></span></a>
+    </header>
+
+    <div class="content">
+      {{template "content" .}}
+    </div>
+
+    <footer class="container">
+      <div class="copyright">2024 oliver jakobs. All Rights Reserved.</div>
+    </footer>
+  </body>
+</html>
+{{end}}

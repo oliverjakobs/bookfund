@@ -1,0 +1,17 @@
+{{define "modal"}}
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content">
+		<h1>New {{.}}</h1>
+		<form class="transaction-form"  hx-post="/transaction/{{.}}">
+			<input type="number" step="0.01" id="amount" name="amount" placeholder="0.00" required>
+			<label for="reason">Reason for Transaction:</label>
+			<textarea id="reason" name="reason" placeholder="Enter reason for the transaction" required></textarea>
+			<div>
+				<button class="btn danger" _="on click trigger closeModal">Cancel</button>
+				<button type="submit" class="btn danger">Send</button>
+			</div>
+		</form>
+	</div>
+</div>
+{{end}}
