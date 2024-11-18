@@ -57,6 +57,7 @@ func main() {
 	mux.Handle("GET /review/search", LoggingHandler(reviewSearch))
 	mux.Handle("GET /modal/{type}", LoggingHandler(modal))
 	mux.Handle("POST /transaction/{type}", LoggingHandler(transaction))
+	mux.Handle("DELETE /delete/{id}", LoggingHandler(delete))
 
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf("localhost:%s", port)

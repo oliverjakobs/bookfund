@@ -203,6 +203,10 @@ li .amount {
   justify-self: end;
 }
 
+li .timestamp {
+  justify-self: end;
+}
+
 /* --------------------------| form |------------------------------ */
 .transaction-form {
   display: flex;

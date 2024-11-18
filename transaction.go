@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"time"
 )
 
@@ -14,7 +15,7 @@ const (
 type Transaction struct {
 	ID        int64
 	Type      TransactionType
-	Amount    float32
+	Amount    float64
 	Reason    string
 	Timestamp time.Time
 }
@@ -42,12 +43,16 @@ func QueryTransactions(query string, args ...any) ([]Transaction, error) {
 }
 
 func CreateTransaction(t Transaction) error {
-	stmt, err := db.Prepare("INSERT INTO transactions (type,amount,reason,timestamp) values (?,?,?,?)")
+	_, err := db.Exec("INSERT INTO transactions (type,amount,reason,timestamp) values (?,?,?,?)", t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
+	return err
+}
 
-	if err == nil {
-		_, err = stmt.Exec(t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
+func DeleteTransaction(id int64) error {
+	if id <= 0 {
+		return errors.New("invalid id")
 	}
 
+	_, err := db.Exec("DELETE FROM transactions WHERE id=?", id)
 	return err
 }
 
@@ -63,14 +68,9 @@ func GetTransactionsByReason(reason string) ([]Transaction, error) {
 	return QueryTransactions("SELECT * FROM transactions WHERE reason LIKE ?  ORDER BY timestamp DESC", "%"+reason+"%")
 }
 
-func GetBalance() (float32, error) {
-	stmt, _ := db.Prepare("SELECT SUM(amount) FROM transactions WHERE type=?")
+func GetBalance() (float64, error) {
+	var balance float64
+	err := db.QueryRow("SELECT SUM(amount) FROM transactions").Scan(&balance)
 
-	var depositAmount, withdrawalAmount float32
-
-	var err error
-	err = stmt.QueryRow(DEPOSIT).Scan(&depositAmount)
-	err = stmt.QueryRow(WITHDRAWAL).Scan(&withdrawalAmount)
-
-	return depositAmount - withdrawalAmount, err
+	return balance, err
 }

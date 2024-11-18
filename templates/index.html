@@ -8,7 +8,6 @@
         <div>
             <button class="button deposit" hx-get="/modal/deposit" hx-target="body" hx-swap="beforeend">+</button>
             <button class="button withdrawal" hx-get="/modal/withdrawal" hx-target="body" hx-swap="beforeend">-</button>
-            
         </div>
     </div>
     <ul>
@@ -16,7 +15,7 @@
             <li class="{{.Type}}">
                 <div class="amount">{{ formatCurrency .Amount }}</div>
                 <div>{{.Reason}}</div>
-                <div>{{.Timestamp.Format "02.01.2006"}}</div>
+                <div class="timestamp">{{.Timestamp.Format "02.01.2006"}}</div>
             </li>
         {{end}}
     </ul>

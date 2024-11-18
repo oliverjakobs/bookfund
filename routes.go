@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -16,8 +17,8 @@ func handleTemplateError(w http.ResponseWriter, err error) {
 	}
 }
 
-func FormatCurrency(amount float32) string {
-	return fmt.Sprintf("%.2f €", amount)
+func FormatCurrency(amount float64) string {
+	return fmt.Sprintf("%.2f €", math.Abs(amount))
 }
 
 var baseTmpl = template.New("base").Funcs(template.FuncMap{
@@ -45,7 +46,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	renderTemplate(w, "./templates/index.html", struct {
 		Transactions []Transaction
-		Balance      float32
+		Balance      float64
 	}{
 		Transactions: transactions,
 		Balance:      balance,
@@ -70,19 +71,20 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var amount float64
-	amount, err = strconv.ParseFloat(r.FormValue("amount"), 32)
+	amount, err = strconv.ParseFloat(r.FormValue("amount"), 64)
 
 	if err != nil {
 		log.Printf("ERROR: %s\n", err.Error())
 		http.Error(w, fmt.Sprintf("failed to parse float: %v", err), http.StatusInternalServerError)
 	}
 
-	log.Println("Url", r.URL)
-	log.Println("new", transactionType, "with query:", r.Form)
+	if WITHDRAWAL == transactionType {
+		amount *= -1
+	}
 
 	err = CreateTransaction(Transaction{
 		Type:      transactionType,
-		Amount:    float32(amount),
+		Amount:    amount,
 		Reason:    r.FormValue("reason"),
 		Timestamp: time.Now(),
 	})
@@ -94,6 +96,24 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("HX-Redirect", "/")
 	w.WriteHeader(http.StatusCreated)
+}
+
+func delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+
+	if err != nil {
+		log.Printf("ERROR: %s\n", err.Error())
+		http.Error(w, fmt.Sprintf("failed to parse id: %v", err), http.StatusInternalServerError)
+	}
+
+	err = DeleteTransaction(id)
+
+	if err != nil {
+		log.Printf("ERROR: %s\n", err.Error())
+		http.Error(w, fmt.Sprintf("failed to delete: %v", err), http.StatusInternalServerError)
+	}
+
+	w.Header().Add("HX-Redirect", "/review")
 }
 
 func review(w http.ResponseWriter, r *http.Request) {
