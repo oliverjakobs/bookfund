@@ -10,11 +10,9 @@ import (
 	"time"
 )
 
-func handleTemplateError(w http.ResponseWriter, err error) {
-	if err != nil {
-		http.Error(w, fmt.Sprintf("index: couldn't parse template: %v", err), http.StatusInternalServerError)
-		log.Printf("ERROR: %s\n", err.Error())
-	}
+func handleError(w http.ResponseWriter, msg string, err error) {
+	http.Error(w, fmt.Sprintf("%s: %v", msg, err), http.StatusInternalServerError)
+	log.Printf("ERROR: %s\n", err.Error())
 }
 
 func FormatCurrency(amount float64) string {
@@ -25,11 +23,12 @@ var baseTmpl = template.New("base").Funcs(template.FuncMap{
 	"formatCurrency": FormatCurrency,
 })
 
-func renderTemplate(w http.ResponseWriter, filename string, data any) {
-	tmpl := template.Must(baseTmpl.Clone())
-	template.Must(tmpl.ParseFiles("./templates/base.html", filename))
+func renderTemplate(w http.ResponseWriter, tmpl *template.Template, name string, data any) {
+	err := tmpl.ExecuteTemplate(w, name, data)
 
-	handleTemplateError(w, tmpl.ExecuteTemplate(w, "base", data))
+	if err != nil {
+		handleError(w, "failed to render template", err)
+	}
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -38,13 +37,21 @@ func index(w http.ResponseWriter, r *http.Request) {
 	transactions, err := GetTransactions(timeCutoff)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, "failed to query transactions", err)
 		return
 	}
 
-	balance, _ := GetBalance()
+	var balance float64
+	balance, err = GetBalance()
+	if err != nil {
+		handleError(w, "failed to query balance", err)
+		return
+	}
 
-	renderTemplate(w, "./templates/index.html", struct {
+	tmpl := template.Must(baseTmpl.Clone())
+	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/index.html"))
+
+	renderTemplate(w, tmpl, "base", struct {
 		Transactions []Transaction
 		Balance      float64
 	}{
@@ -56,42 +63,52 @@ func index(w http.ResponseWriter, r *http.Request) {
 func modal(w http.ResponseWriter, r *http.Request) {
 	modalType := r.PathValue("type")
 
-	var templates = template.Must(template.ParseFiles("./templates/modal.html"))
-	handleTemplateError(w, templates.ExecuteTemplate(w, "modal", modalType))
+	tmpl := template.Must(template.ParseFiles("./templates/modal.html"))
+
+	renderTemplate(w, tmpl, "modal", modalType)
 }
 
-func transaction(w http.ResponseWriter, r *http.Request) {
-	transactionType := TransactionType(r.PathValue("type"))
-
+func parseTransactionForm(r *http.Request, transactionType TransactionType) (Transaction, error) {
 	err := r.ParseForm()
 
 	if err != nil {
-		log.Printf("ERROR: %s\n", err.Error())
-		http.Error(w, fmt.Sprintf("failed to parse form: %v", err), http.StatusInternalServerError)
+		return Transaction{}, err
 	}
 
 	var amount float64
 	amount, err = strconv.ParseFloat(r.FormValue("amount"), 64)
 
 	if err != nil {
-		log.Printf("ERROR: %s\n", err.Error())
-		http.Error(w, fmt.Sprintf("failed to parse float: %v", err), http.StatusInternalServerError)
+		return Transaction{}, err
 	}
 
 	if WITHDRAWAL == transactionType {
 		amount *= -1
 	}
 
-	err = CreateTransaction(Transaction{
+	return Transaction{
 		Type:      transactionType,
 		Amount:    amount,
 		Reason:    r.FormValue("reason"),
 		Timestamp: time.Now(),
-	})
+	}, nil
+}
+
+func transaction(w http.ResponseWriter, r *http.Request) {
+	transactionType := TransactionType(r.PathValue("type"))
+
+	transaction, err := parseTransactionForm(r, transactionType)
 
 	if err != nil {
-		log.Printf("ERROR: %s\n", err.Error())
-		http.Error(w, fmt.Sprintf("failed to create transaction: %v", err), http.StatusInternalServerError)
+		handleError(w, "failed to parse form", err)
+		return
+	}
+
+	err = CreateTransaction(transaction)
+
+	if err != nil {
+		handleError(w, "failed to create transaction", err)
+		return
 	}
 
 	w.Header().Add("HX-Redirect", "/")
@@ -102,15 +119,15 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 
 	if err != nil {
-		log.Printf("ERROR: %s\n", err.Error())
-		http.Error(w, fmt.Sprintf("failed to parse id: %v", err), http.StatusInternalServerError)
+		handleError(w, "failed to parse id", err)
+		return
 	}
 
 	err = DeleteTransaction(id)
 
 	if err != nil {
-		log.Printf("ERROR: %s\n", err.Error())
-		http.Error(w, fmt.Sprintf("failed to delete: %v", err), http.StatusInternalServerError)
+		handleError(w, "failed to delete transaction", err)
+		return
 	}
 
 	w.Header().Add("HX-Redirect", "/review")
@@ -120,18 +137,18 @@ func review(w http.ResponseWriter, r *http.Request) {
 	transactions, err := GetTransactionsAll()
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, "failed to query transactions", err)
 		return
 	}
 
 	tmpl := template.Must(baseTmpl.Clone())
 	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/review_table.html", "./templates/review_entries.html"))
 
-	handleTemplateError(w, tmpl.ExecuteTemplate(w, "base", struct {
+	renderTemplate(w, tmpl, "base", struct {
 		Entries []Transaction
 	}{
 		Entries: transactions,
-	}))
+	})
 }
 
 func reviewSearch(w http.ResponseWriter, r *http.Request) {
@@ -139,12 +156,12 @@ func reviewSearch(w http.ResponseWriter, r *http.Request) {
 	transactions, err := GetTransactionsByReason(search)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, "failed to query transactions", err)
 		return
 	}
 
 	tmpl := template.Must(baseTmpl.Clone())
 	template.Must(tmpl.ParseFiles("./templates/review_entries.html"))
 
-	handleTemplateError(w, tmpl.ExecuteTemplate(w, "entries", transactions))
+	renderTemplate(w, tmpl, "entries", transactions)
 }

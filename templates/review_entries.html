@@ -16,7 +16,7 @@
             <td class="right">{{formatCurrency .Amount}}</td>
             <td class="reason">{{.Reason}}</td>
             <td class="right">{{.Timestamp.Format "02.01.2006"}}</td>
-            <td class="center"><button hx-delete="/delete/{{.ID}}" class="delete" ><span class="lnr lnr-trash"></span></button></td>
+            <td class="center"><a hx-delete="/delete/{{.ID}}" class="delete" href="/delete/{{.ID}}"><span class="lnr lnr-trash"></span></a></td>
         </tr>
     {{end}}
     </tbody>
