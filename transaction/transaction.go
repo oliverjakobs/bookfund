@@ -1,4 +1,4 @@
-package main
+package transaction
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ type Transaction struct {
 	Timestamp time.Time
 }
 
-func QueryTransactions(query string, args ...any) ([]Transaction, error) {
+func Query(query string, args ...any) ([]Transaction, error) {
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return []Transaction{}, err
@@ -42,12 +42,12 @@ func QueryTransactions(query string, args ...any) ([]Transaction, error) {
 	return transactions, err
 }
 
-func CreateTransaction(t Transaction) error {
+func Create(t Transaction) error {
 	_, err := db.Exec("INSERT INTO transactions (type,amount,reason,timestamp) values (?,?,?,?)", t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
 	return err
 }
 
-func DeleteTransaction(id int64) error {
+func Delete(id int64) error {
 	if id <= 0 {
 		return errors.New("invalid id")
 	}
@@ -56,16 +56,16 @@ func DeleteTransaction(id int64) error {
 	return err
 }
 
-func GetTransactions(after time.Time) ([]Transaction, error) {
-	return QueryTransactions("SELECT * FROM transactions WHERE timestamp >= ? ORDER BY timestamp DESC", after.Unix())
+func GetAfter(after time.Time) ([]Transaction, error) {
+	return Query("SELECT * FROM transactions WHERE timestamp >= ? ORDER BY timestamp DESC", after.Unix())
 }
 
-func GetTransactionsAll() ([]Transaction, error) {
-	return QueryTransactions("SELECT * FROM transactions ORDER BY timestamp DESC")
+func GetAll() ([]Transaction, error) {
+	return Query("SELECT * FROM transactions ORDER BY timestamp DESC")
 }
 
-func GetTransactionsByReason(reason string) ([]Transaction, error) {
-	return QueryTransactions("SELECT * FROM transactions WHERE reason LIKE ?  ORDER BY timestamp DESC", "%"+reason+"%")
+func GetByReason(reason string) ([]Transaction, error) {
+	return Query("SELECT * FROM transactions WHERE reason LIKE ?  ORDER BY timestamp DESC", "%"+reason+"%")
 }
 
 func GetBalance() (float64, error) {

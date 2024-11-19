@@ -1,6 +1,7 @@
 package main
 
 import (
+	t "bookfund/transaction"
 	"fmt"
 	"html/template"
 	"log"
@@ -34,7 +35,7 @@ func renderTemplate(w http.ResponseWriter, tmpl *template.Template, name string,
 func index(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	timeCutoff := time.Date(now.Year(), now.Month()-3, 1, 0, 0, 0, 0, now.Location())
-	transactions, err := GetTransactions(timeCutoff)
+	transactions, err := t.GetAfter(timeCutoff)
 
 	if err != nil {
 		handleError(w, "failed to query transactions", err)
@@ -42,7 +43,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var balance float64
-	balance, err = GetBalance()
+	balance, err = t.GetBalance()
 	if err != nil {
 		handleError(w, "failed to query balance", err)
 		return
@@ -52,7 +53,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/index.html"))
 
 	renderTemplate(w, tmpl, "base", struct {
-		Transactions []Transaction
+		Transactions []t.Transaction
 		Balance      float64
 	}{
 		Transactions: transactions,
@@ -68,25 +69,25 @@ func modal(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, tmpl, "modal", modalType)
 }
 
-func parseTransactionForm(r *http.Request, transactionType TransactionType) (Transaction, error) {
+func parseTransactionForm(r *http.Request, transactionType t.TransactionType) (t.Transaction, error) {
 	err := r.ParseForm()
 
 	if err != nil {
-		return Transaction{}, err
+		return t.Transaction{}, err
 	}
 
 	var amount float64
 	amount, err = strconv.ParseFloat(r.FormValue("amount"), 64)
 
 	if err != nil {
-		return Transaction{}, err
+		return t.Transaction{}, err
 	}
 
-	if WITHDRAWAL == transactionType {
+	if t.WITHDRAWAL == transactionType {
 		amount *= -1
 	}
 
-	return Transaction{
+	return t.Transaction{
 		Type:      transactionType,
 		Amount:    amount,
 		Reason:    r.FormValue("reason"),
@@ -94,8 +95,8 @@ func parseTransactionForm(r *http.Request, transactionType TransactionType) (Tra
 	}, nil
 }
 
-func transaction(w http.ResponseWriter, r *http.Request) {
-	transactionType := TransactionType(r.PathValue("type"))
+func post(w http.ResponseWriter, r *http.Request) {
+	transactionType := t.TransactionType(r.PathValue("type"))
 
 	transaction, err := parseTransactionForm(r, transactionType)
 
@@ -104,7 +105,7 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = CreateTransaction(transaction)
+	err = t.Create(transaction)
 
 	if err != nil {
 		handleError(w, "failed to create transaction", err)
@@ -123,7 +124,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = DeleteTransaction(id)
+	err = t.Delete(id)
 
 	if err != nil {
 		handleError(w, "failed to delete transaction", err)
@@ -134,7 +135,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func review(w http.ResponseWriter, r *http.Request) {
-	transactions, err := GetTransactionsAll()
+	transactions, err := t.GetAll()
 
 	if err != nil {
 		handleError(w, "failed to query transactions", err)
@@ -145,7 +146,7 @@ func review(w http.ResponseWriter, r *http.Request) {
 	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/review_table.html", "./templates/review_entries.html"))
 
 	renderTemplate(w, tmpl, "base", struct {
-		Entries []Transaction
+		Entries []t.Transaction
 	}{
 		Entries: transactions,
 	})
@@ -153,7 +154,7 @@ func review(w http.ResponseWriter, r *http.Request) {
 
 func reviewSearch(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
-	transactions, err := GetTransactionsByReason(search)
+	transactions, err := t.GetByReason(search)
 
 	if err != nil {
 		handleError(w, "failed to query transactions", err)
