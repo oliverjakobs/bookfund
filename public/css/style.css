@@ -1,6 +1,6 @@
 :root {
-  --main-color: #212529;
-  --main-bg-color: #ffffff;
+  --main-color: #442d2d;
+  --main-bg-color: #F9F6EE;
   --border-color: #b6b6b6;
   --border-hover: #6b6b6b;
   --hover-color: rgba(0, 0, 0, 0.05);
@@ -39,49 +39,28 @@ header {
   margin-bottom: 3rem;
 }
 
+header .logo {
+  flex-grow: 2;
+  text-align: center;
+}
+
 header .spacer, header .menu {
-  width: 2.4rem;
   margin: 0 0.4rem;
+  font-size: 1.6rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-grow: 1;
+  width: 0;
 }
 
 header .menu {
-  font-size: 1.6rem;
-  text-align: center;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-end;
   transition: all .6s ease;
-  position: relative;
 }
 
-header .menu:hover {
+header .menu a:hover {
   color: #b4b4b4;
-}
-
-header .menu>a {
-  position: absolute;
-}
-
-.drop-menu{
-  position: absolute;
-  list-style: none;
-  border: 1px solid var(--border-color);
-  right: 0;
-  opacity: 0;
-  visibility: hidden;
-}
-.menu:hover .drop-menu{
-  transition: all 0.3s ease;
-  top: 36px;
-  opacity: 1;
-  visibility: visible;
-}
-.drop-menu li a{
-  width: 100%;
-  display: block;
-  padding: 0 0 0 15px;
-  font-weight: 400;
-  border-radius: 0px;
 }
 
 .content {
