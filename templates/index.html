@@ -12,8 +12,8 @@
     </div>
     <ul>
         {{range .Transactions}}
-            <li class="{{.Type}}">
-                <div class="amount">{{ formatCurrency .Amount }}</div>
+            <li class="{{ if lt .Amount 0.0 }} withdrawal {{ else }} deposit {{ end }}">
+                <div class="amount">{{ abs .Amount | formatCurrency }}</div>
                 <div>{{.Reason}}</div>
                 <div class="timestamp">{{.Timestamp.Format "02.01.2006"}}</div>
             </li>

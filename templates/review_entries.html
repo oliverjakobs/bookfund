@@ -2,9 +2,8 @@
 <table class="table" hx-table-content>
     <thead>
         <tr>
-            <th>Type</th>
-            <th>Amount</th>
             <th>Reason</th>
+            <th>Amount</th>
             <th>Date</th>
             <th></th>
         </tr>
@@ -12,9 +11,8 @@
     <tbody>
     {{range .}}
         <tr>
-            <td>{{.Type}}</td>
-            <td class="right">{{formatCurrency .Amount}}</td>
             <td class="reason">{{.Reason}}</td>
+            <td class="right">{{formatCurrency .Amount}}</td>
             <td class="right">{{.Timestamp.Format "02.01.2006"}}</td>
             <td class="center"><button hx-delete="/{{.ID}}" class="delete"><span class="lnr lnr-trash"></span></button></td>
         </tr>

@@ -52,9 +52,13 @@ func main() {
 	mux.Handle("POST /{type}", LoggingHandler(post))
 	mux.Handle("DELETE /{id}", LoggingHandler(delete))
 
+	mux.Handle("GET /modal/{type}", LoggingHandler(modal))
+
 	mux.Handle("GET /review", LoggingHandler(review))
 	mux.Handle("GET /review/search", LoggingHandler(reviewSearch))
-	mux.Handle("GET /modal/{type}", LoggingHandler(modal))
+
+	mux.Handle("GET /login", LoggingHandler(login))
+	mux.Handle("GET /logout", LoggingHandler(logout))
 
 	port := os.Getenv("PORT")
 	addr := fmt.Sprintf("localhost:%s", port)

@@ -28,30 +28,60 @@ body {
 header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: stretch;
   width: var(--container-width);
   margin-right: auto;
   margin-left: auto;
   font-size: 3rem;
   font-weight: 500;
-  padding: 0.6rem;
+  padding: 0.8rem 0.6rem 0;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: 3rem;
 }
 
-header .spacer, header .user {
+header .spacer, header .menu {
   width: 2.4rem;
   margin: 0 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-header .user {
+header .menu {
   font-size: 1.6rem;
   text-align: center;
   transition: all .6s ease;
+  position: relative;
 }
 
-header .user:hover {
+header .menu:hover {
   color: #b4b4b4;
+}
+
+header .menu>a {
+  position: absolute;
+}
+
+.drop-menu{
+  position: absolute;
+  list-style: none;
+  border: 1px solid var(--border-color);
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+.menu:hover .drop-menu{
+  transition: all 0.3s ease;
+  top: 36px;
+  opacity: 1;
+  visibility: visible;
+}
+.drop-menu li a{
+  width: 100%;
+  display: block;
+  padding: 0 0 0 15px;
+  font-weight: 400;
+  border-radius: 0px;
 }
 
 .content {
@@ -356,3 +386,4 @@ li .timestamp {
   font-size: 1em;
   background: none;
 }
+

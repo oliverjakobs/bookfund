@@ -5,16 +5,8 @@ import (
 	"time"
 )
 
-type TransactionType string
-
-const (
-	DEPOSIT    = "deposit"
-	WITHDRAWAL = "withdrawal"
-)
-
 type Transaction struct {
 	ID        int64
-	Type      TransactionType
 	Amount    float64
 	Reason    string
 	Timestamp time.Time
@@ -31,7 +23,7 @@ func Query(query string, args ...any) ([]Transaction, error) {
 		var t Transaction
 
 		var unixTime int64
-		err = rows.Scan(&t.ID, &t.Type, &t.Amount, &t.Reason, &unixTime)
+		err = rows.Scan(&t.ID, &t.Amount, &t.Reason, &unixTime)
 		if err != nil {
 			break
 		}
@@ -43,7 +35,7 @@ func Query(query string, args ...any) ([]Transaction, error) {
 }
 
 func Create(t Transaction) error {
-	_, err := db.Exec("INSERT INTO transactions (type,amount,reason,timestamp) values (?,?,?,?)", t.Type, t.Amount, t.Reason, t.Timestamp.Unix())
+	_, err := db.Exec("INSERT INTO transactions (amount,reason,timestamp) values (?,?,?,?)", t.Amount, t.Reason, t.Timestamp.Unix())
 	return err
 }
 

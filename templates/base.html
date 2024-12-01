@@ -16,7 +16,17 @@
     <header>
       <div class="spacer"></div>
       <a class="logo" href="/">bookfund</a>
-      <a class="user" href="/review"><span class="lnr lnr-user"></span></a>
+      {{if .User}}
+        <div class="menu">
+          <a class="user" href=""><span class="lnr lnr-user"></span></a>
+          <ul class="drop-menu">
+            <li><a href="/review">Review</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </div>
+      {{else}}
+        <a class="menu" href="/login"><span class="lnr lnr-enter"></span></a>
+      {{end}}
     </header>
 
     <div class="content">

@@ -17,11 +17,12 @@ func handleError(w http.ResponseWriter, msg string, err error) {
 }
 
 func FormatCurrency(amount float64) string {
-	return fmt.Sprintf("%.2f €", math.Abs(amount))
+	return fmt.Sprintf("%.2f €", amount)
 }
 
 var baseTmpl = template.New("base").Funcs(template.FuncMap{
 	"formatCurrency": FormatCurrency,
+	"abs":            math.Abs,
 })
 
 func renderTemplate(w http.ResponseWriter, tmpl *template.Template, name string, data any) {
@@ -31,6 +32,8 @@ func renderTemplate(w http.ResponseWriter, tmpl *template.Template, name string,
 		handleError(w, "failed to render template", err)
 	}
 }
+
+var user bool = false
 
 func index(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
@@ -55,9 +58,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, tmpl, "base", struct {
 		Transactions []t.Transaction
 		Balance      float64
+		User         bool
 	}{
 		Transactions: transactions,
 		Balance:      balance,
+		User:         user,
 	})
 }
 
@@ -69,7 +74,7 @@ func modal(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, tmpl, "modal", modalType)
 }
 
-func parseTransactionForm(r *http.Request, transactionType t.TransactionType) (t.Transaction, error) {
+func parseTransactionForm(r *http.Request) (t.Transaction, error) {
 	err := r.ParseForm()
 
 	if err != nil {
@@ -83,12 +88,7 @@ func parseTransactionForm(r *http.Request, transactionType t.TransactionType) (t
 		return t.Transaction{}, err
 	}
 
-	if t.WITHDRAWAL == transactionType {
-		amount *= -1
-	}
-
 	return t.Transaction{
-		Type:      transactionType,
 		Amount:    amount,
 		Reason:    r.FormValue("reason"),
 		Timestamp: time.Now(),
@@ -96,13 +96,15 @@ func parseTransactionForm(r *http.Request, transactionType t.TransactionType) (t
 }
 
 func post(w http.ResponseWriter, r *http.Request) {
-	transactionType := t.TransactionType(r.PathValue("type"))
-
-	transaction, err := parseTransactionForm(r, transactionType)
+	transaction, err := parseTransactionForm(r)
 
 	if err != nil {
 		handleError(w, "failed to parse form", err)
 		return
+	}
+
+	if r.PathValue("type") == "withdrawal" {
+		transaction.Amount *= -1
 	}
 
 	err = t.Create(transaction)
@@ -147,8 +149,10 @@ func review(w http.ResponseWriter, r *http.Request) {
 
 	renderTemplate(w, tmpl, "base", struct {
 		Entries []t.Transaction
+		User    bool
 	}{
 		Entries: transactions,
+		User:    true,
 	})
 }
 
@@ -165,4 +169,16 @@ func reviewSearch(w http.ResponseWriter, r *http.Request) {
 	template.Must(tmpl.ParseFiles("./templates/review_entries.html"))
 
 	renderTemplate(w, tmpl, "entries", transactions)
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	user = true
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	user = false
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
