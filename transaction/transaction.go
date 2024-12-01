@@ -35,7 +35,7 @@ func Query(query string, args ...any) ([]Transaction, error) {
 }
 
 func Create(t Transaction) error {
-	_, err := db.Exec("INSERT INTO transactions (amount,reason,timestamp) values (?,?,?,?)", t.Amount, t.Reason, t.Timestamp.Unix())
+	_, err := db.Exec("INSERT INTO transactions (amount,reason,timestamp) values (?,?,?)", t.Amount, t.Reason, t.Timestamp.Unix())
 	return err
 }
 
