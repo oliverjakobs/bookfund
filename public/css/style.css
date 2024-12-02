@@ -1,22 +1,25 @@
 :root {
-  --main-color: #442d2d;
-  --main-bg-color: #F9F6EE;
-  --border-color: #b6b6b6;
-  --border-hover: #6b6b6b;
-  --hover-color: rgba(0, 0, 0, 0.05);
+  --color-fg: #442d2d;
+  --color-bg: #F9F6EE;
 
-  --red: #faafa8;
-  --green: #b4ddd3;
+  --color-hover: #b6b6b6;
+  --color-border: #b6b6b6;
+  --color-border-hover: #6b6b6b;
+  --color-table: #c7c5bf;
+  --color-table-hover: rgba(0, 0, 0, 0.1);
 
-  --container-width: 40%;
+  --color-withdrawal: #faafa8;
+  --color-deposit: #b4ddd3;
+
+  --width-container: 40%;
 }
 
 body {
   font-family:  sans-serif;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--main-color);
-  background-color: var(--main-bg-color);
+  color: var(--color-fg);
+  background-color: var(--color-bg);
   display:flex;
   flex-direction:column;
   min-height: 100vh;
@@ -29,13 +32,13 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  width: var(--container-width);
+  width: var(--width-container);
   margin-right: auto;
   margin-left: auto;
   font-size: 3rem;
   font-weight: 500;
   padding: 0.8rem 0.6rem 0;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid var(--color-border);
   margin-bottom: 3rem;
 }
 
@@ -60,7 +63,7 @@ header .menu {
 }
 
 header .menu a:hover {
-  color: #b4b4b4;
+  color: var(--color-hover);
 }
 
 .content {
@@ -70,14 +73,14 @@ header .menu a:hover {
 footer {
   text-align: center;
   padding: 1.2rem;
-  border-top: 2px solid var(--border-color);
+  border-top: 2px solid var(--color-border);
   margin-top: 3rem;
   margin-bottom: 1.8rem;
 }
 
 a {
   text-decoration: none;
-  color: var(--main-color);
+  color: var(--color-fg);
 }
 
 .logo::before, .logo::after {
@@ -112,19 +115,19 @@ button, a.button, form input[type=submit] {
   font-weight: 300;
   text-align: center;
   border-radius: 4px;
-  border: 1px solid var(--border-color);
-  background-color: var(--main-bg-color);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
   cursor: pointer;
   transition: all .6s ease;
 }
 
 button:hover, a.button:hover, form input[type=submit]:hover {
-  border-color: var(--border-hover);
-  background-color: var(--hover-color);
+  border-color: var(--color-border-hover);
+  background-color: var(--color-hover);
 }
 
 .container {
-  width: var(--container-width);
+  width: var(--width-container);
   display: block;
   margin-right: auto;
   margin-left: auto;
@@ -137,7 +140,7 @@ button:hover, a.button:hover, form input[type=submit]:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 1.2rem 1.4rem;
   margin-bottom: 2rem;
@@ -155,7 +158,7 @@ button:hover, a.button:hover, form input[type=submit]:hover {
 .balance {
   padding: 0.8rem 0;
   font-size: 2rem;
-  color: #b4b4b4;
+  color: var(--color-hover);
 }
 
 /* --------------------------| entries |--------------------------- */
@@ -187,7 +190,7 @@ ul li::before {
 }
 
 li.deposit {
-  background-color: var(--green);
+  background-color: var(--color-deposit);
 }
 
 li.deposit::before {
@@ -195,7 +198,7 @@ li.deposit::before {
 }
 
 li.withdrawal {
-  background-color: var(--red);
+  background-color: var(--color-withdrawal);
 }
 
 li.withdrawal::before {
@@ -221,6 +224,8 @@ li .timestamp {
   display: flex;
   flex-direction: column;
 }
+
+
 
 
 /* --------------------------| modal |----------------------------- */
@@ -319,13 +324,22 @@ li .timestamp {
   margin-bottom: 0.8rem;
 }
 
-.table-control > :last-child:not(:only-child) {
-  margin-left: auto;
+.table-control input[type=search] {
+	border: none;
+	outline: none;
+	background: none;
+  padding: 0.3rem 0.4rem;
+  width: 20%;
+	border-bottom: 2px solid var(--color-bg);
+  transition: 0.5s;
 }
 
-.table-control .search {
-  padding: 0.3rem 0;
-  width: 20%;
+.table-control input[type=search]:focus {
+  border-color: var(--color-border-hover);
+}
+
+.table-control > :last-child:not(:only-child) {
+  margin-left: auto;
 }
 
 .table {
@@ -336,17 +350,17 @@ li .timestamp {
 
 .table :is(th, td) {
   padding: 0.5rem 0.5rem;
-  border: thin solid var(--border-color);
+  border: thin solid var(--color-border);
 }
 
 .table th {
   text-align: left;
-  border-color: var(--border-color);
-  background-color: var(--border-color);
+  border-color: var(--color-border);
+  background-color: var(--color-table);
 }
 
 .table tr:hover {
-  background-color: var(--hover-color);
+  background-color: var(--color-table-hover);
 }
 
 .table td.right {

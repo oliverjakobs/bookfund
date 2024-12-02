@@ -84,15 +84,11 @@ func parseTransactionForm(r *http.Request) (t.Transaction, error) {
 	var amount float64
 	amount, err = strconv.ParseFloat(r.FormValue("amount"), 64)
 
-	if err != nil {
-		return t.Transaction{}, err
-	}
-
 	return t.Transaction{
 		Amount:    amount,
 		Reason:    r.FormValue("reason"),
 		Timestamp: time.Now(),
-	}, nil
+	}, err
 }
 
 func post(w http.ResponseWriter, r *http.Request) {
