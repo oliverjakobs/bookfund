@@ -10,8 +10,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 )
+
+func IsDevelop() bool {
+	return os.Getenv("APP_ENV") == "develop"
+}
 
 // logging is middleware for wrapping any handler we want to track response
 // times for and to see what resources are requested.
@@ -30,14 +34,12 @@ func main() {
 
 	log.Print("Setting up environment.")
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	log.Print("Connecting to database.")
-	dbName := fmt.Sprintf("./db/%s.db", os.Getenv("DB_NAME"))
-	err = transaction.OpenDB(dbName)
+	dbName := "bookfund"
+	if IsDevelop() {
+		dbName += "-develop"
+	}
+	err := transaction.OpenDB(fmt.Sprintf("./db/%s.db", dbName))
 	if err != nil {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}
@@ -48,6 +50,7 @@ func main() {
 	mux.Handle("GET /public/", LoggingHandler(func(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))).ServeHTTP(w, r)
 	}))
+	mux.Handle("GET /robots.txt", http.FileServer(http.Dir(".")))
 	mux.Handle("GET /", LoggingHandler(index))
 	mux.Handle("POST /{type}", LoggingHandler(post))
 	mux.Handle("DELETE /{id}", LoggingHandler(delete))

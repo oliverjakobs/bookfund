@@ -1,8 +1,10 @@
 {{define "base"}}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Bookfund</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
     
@@ -18,10 +20,10 @@
       <a class="logo" href="/">bookfund</a>
       <div class="menu">
         {{if .User}}
-          <a href="/review"><span class="lnr lnr-cog"></span></a>
-          <a href="/logout"><span class="lnr lnr-exit"></span></a>
+          <a href="/review" title="Review"><span class="lnr lnr-cog"></span></a>
+          <a href="/logout" title="Log out"><span class="lnr lnr-exit"></span></a>
         {{else}}
-          <a href="/login"><span class="lnr lnr-enter"></span></a>
+          <a href="/login" title="Log in"><span class="lnr lnr-enter"></span></a>
         {{end}}
       </div>
     </header>

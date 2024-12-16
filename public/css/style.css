@@ -158,7 +158,6 @@ button:hover, a.button:hover, form input[type=submit]:hover {
 .balance {
   padding: 0.8rem 0;
   font-size: 2rem;
-  color: var(--color-hover);
 }
 
 /* --------------------------| entries |--------------------------- */
