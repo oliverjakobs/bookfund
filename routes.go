@@ -37,7 +37,7 @@ var user bool = false
 
 func index(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
-	timeCutoff := time.Date(now.Year(), now.Month()-3, 1, 0, 0, 0, 0, now.Location())
+	timeCutoff := time.Date(now.Year(), now.Month()-3, now.Day(), 0, 0, 0, 0, now.Location())
 	transactions, err := t.GetAfter(timeCutoff)
 
 	if err != nil {
