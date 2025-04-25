@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,15 +14,6 @@ func handleError(w http.ResponseWriter, msg string, err error) {
 	http.Error(w, fmt.Sprintf("%s: %v", msg, err), http.StatusInternalServerError)
 	log.Printf("ERROR: %s\n", err.Error())
 }
-
-func FormatCurrency(amount float64) string {
-	return fmt.Sprintf("%.2f €", amount)
-}
-
-var baseTmpl = template.New("base").Funcs(template.FuncMap{
-	"formatCurrency": FormatCurrency,
-	"abs":            math.Abs,
-})
 
 func renderTemplate(w http.ResponseWriter, tmpl *template.Template, name string, data any) {
 	err := tmpl.ExecuteTemplate(w, name, data)
@@ -52,8 +42,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(baseTmpl.Clone())
-	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/index.html"))
+	tmpl := CreateTemplate("./templates/base.html", "./templates/index.html")
 
 	renderTemplate(w, tmpl, "base", struct {
 		Transactions []t.Transaction
@@ -140,15 +129,14 @@ func review(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(baseTmpl.Clone())
-	template.Must(tmpl.ParseFiles("./templates/base.html", "./templates/review_table.html", "./templates/review_entries.html"))
+	tmpl := CreateTemplate("./templates/base.html", "./templates/review_table.html", "./templates/review_entries.html")
 
 	renderTemplate(w, tmpl, "base", struct {
 		Entries []t.Transaction
 		User    bool
 	}{
 		Entries: transactions,
-		User:    true,
+		User:    user,
 	})
 }
 
@@ -161,8 +149,7 @@ func reviewSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(baseTmpl.Clone())
-	template.Must(tmpl.ParseFiles("./templates/review_entries.html"))
+	tmpl := CreateTemplate("./templates/review_entries.html")
 
 	renderTemplate(w, tmpl, "entries", transactions)
 }

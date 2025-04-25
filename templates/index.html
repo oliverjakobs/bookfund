@@ -1,6 +1,6 @@
 {{define "content"}}
 <div class="container">
-    <div class="control">
+    <div class="control centered">
         <h1>Balance:</h1>
         <div class="balance">
             {{ formatCurrency .Balance }}
@@ -19,5 +19,8 @@
             </li>
         {{end}}
     </ul>
+    <div class="centered">
+        <a class="fancy-link" href="/review">View All</a>
+    </div>
 </div>
 {{end}}

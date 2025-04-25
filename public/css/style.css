@@ -2,7 +2,7 @@
   --color-fg: #442d2d;
   --color-bg: #F9F6EE;
 
-  --color-hover: #b6b6b6;
+  --color-hover: #a7a7a7;
   --color-border: #b6b6b6;
   --color-border-hover: #6b6b6b;
   --color-table: #c7c5bf;
@@ -26,7 +26,6 @@ body {
   padding: 0;
   margin: 0;
 }
-
 
 header {
   display: flex;
@@ -62,10 +61,6 @@ header .menu {
   transition: all .6s ease;
 }
 
-header .menu a:hover {
-  color: var(--color-hover);
-}
-
 .content {
   flex: 1;
 }
@@ -81,6 +76,31 @@ footer {
 a {
   text-decoration: none;
   color: var(--color-fg);
+}
+
+a:hover {
+  color: var(--color-hover);
+}
+
+a.logo:hover {
+  color: var(--color-fg);
+}
+
+.fancy-link {
+  padding: 0.6em 1.2em;
+  margin-left: 0.2em; 
+  transition: all 0.3s ease-in;
+}
+
+.fancy-link::after {
+  content: '\00BB';
+  display: inline-block;
+  transition: all 0.3s ease;
+  padding-left: 0.2em;
+}
+
+.fancy-link:hover::after {
+  transform: translateX(0.2em);
 }
 
 .logo::before, .logo::after {
@@ -133,10 +153,13 @@ button:hover, a.button:hover, form input[type=submit]:hover {
   margin-left: auto;
 }
 
-.control {
+.centered {
   width: fit-content;
   margin-right: auto;
   margin-left: auto;
+}
+
+.control {
   display: flex;
   flex-direction: column;
   align-items: center;
